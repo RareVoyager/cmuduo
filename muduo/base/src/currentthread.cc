@@ -4,18 +4,15 @@
 
 namespace cmuduo
 {
-	namespace base
+	namespace CurrentThread
 	{
-		namespace currentthread
+		void cacheTid()
 		{
-			void cacheTid()
+			if (t_cacheTid == 0)
 			{
-				if (t_cacheTid == 0)
-				{
-					t_cacheTid = static_cast<pid_t>(::syscall(SYS_gettid));
-				}
+				t_cacheTid = static_cast<pid_t>(::syscall(SYS_gettid));
 			}
-		}// namespace currentthread
+		}
+	}// namespace currentthread
 
-	}// namespace base
 }// namespace cmuduo
