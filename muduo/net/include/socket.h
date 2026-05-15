@@ -20,7 +20,7 @@ namespace cmuduo
 			void setTcpNoDelay(bool on);
 			void setReuseAddr(bool on);
 			void setReusePort(bool on);
-			void setKeepActive(bool on);
+			void setKeepAlive(bool on);
 
 		private:
 			int sockfd_;

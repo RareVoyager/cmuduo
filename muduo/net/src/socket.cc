@@ -76,7 +76,7 @@ namespace cmuduo
 			::setsockopt(sockfd_, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval));
 		}
 
-		void Socket::setKeepActive(bool on)
+		void Socket::setKeepAlive(bool on)
 		{
 			int optval = on ? 1 : 0;
 			::setsockopt(sockfd_, SOL_SOCKET, SO_KEEPALIVE, &optval, sizeof(optval));
