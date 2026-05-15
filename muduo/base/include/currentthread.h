@@ -6,7 +6,7 @@ namespace cmuduo
 {
 	namespace CurrentThread
 	{
-		extern __thread int t_cacheTid = 0;
+		extern __thread int t_cacheTid;
 		void cacheTid();
 		inline int tid()
 		{

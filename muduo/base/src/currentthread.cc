@@ -6,6 +6,7 @@ namespace cmuduo
 {
 	namespace CurrentThread
 	{
+		__thread int t_cacheTid = 0;
 		void cacheTid()
 		{
 			if (t_cacheTid == 0)
@@ -13,6 +14,6 @@ namespace cmuduo
 				t_cacheTid = static_cast<pid_t>(::syscall(SYS_gettid));
 			}
 		}
-	}// namespace currentthread
+	}// namespace CurrentThread
 
 }// namespace cmuduo
