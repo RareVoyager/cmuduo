@@ -19,14 +19,14 @@ namespace cmuduo
 			explicit InetAddress(sockaddr_in addr);
 
 			std::string toIp();
-			uint16_t toPort();
-			std::string toIpPort();
+			uint16_t toPort() const;
+			std::string toIpPort() const;
 
 			const sockaddr_in* getSockAddr() const
 			{ return &addr_; }
 
 			void setSockAddr(const sockaddr_in addr)
-			{addr_ = addr;}
+			{ addr_ = addr; }
 
 		private:
 			sockaddr_in addr_;
