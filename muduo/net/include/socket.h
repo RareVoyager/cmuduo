@@ -15,6 +15,8 @@ namespace cmuduo
 			void listen();
 			int accept(base::InetAddress* address);
 
+			int fd() const
+			{ return sockfd_; }
 			void shutdownWrite();
 
 			void setTcpNoDelay(bool on);
