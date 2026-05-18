@@ -1,4 +1,7 @@
+#include <cstring>
+
 #include <include/log.h>
+#include <include/tcpconnection.h>
 #include <include/tcpserver.h>
 
 
@@ -30,6 +33,14 @@ namespace cmuduo
 
 		TcpServer::~TcpServer()
 		{
+			for (auto& item: connectionMap_)
+			{
+				TcpConnectionPtr conn(item.second);
+				item.second.reset();
+				conn->getLoop()->runInLoop([conn]() {
+					conn->connectDestroyed();
+				});
+			}
 		}
 
 		void TcpServer::setThreadNum(int startNum)
@@ -49,14 +60,48 @@ namespace cmuduo
 
 		void TcpServer::newConnection(int sockfd, const base::InetAddress& peerAddr)
 		{
+			// 轮询算法获得
+			EventLoop* ioLoop = threadPool_->getNextLoop();
+			char buf[64] = {0};
+			snprintf(buf, sizeof(buf), "-%s#%d", ipPort_.c_str(), nextConnId_++);
+			std::string connName = name_ + buf;
+
+			LOG_INFO("TcpServer::newConnection [%s] - new connection [%s] from %s \n",
+					 name_.c_str(), connName.c_str(), peerAddr.toIpPort().c_str());
+
+			sockaddr_in local;
+			::bzero(&local, sizeof local);
+			socklen_t len = sizeof local;
+			if (::getsockname(sockfd, (sockaddr*)&local, &len) < 0)
+			{
+				LOG_ERROR("socket::getLocalAddr");
+			}
+			base::InetAddress localAddr(local);
+			TcpConnectionPtr conn(new TcpConnection(ioLoop, connName, sockfd, localAddr, peerAddr));
+			connectionMap_[connName] = conn;
+
+			conn->setMessageCallback(messageCallback_);
+			conn->setWriteCompleteCallback(writeCompleteCallback_);
+			conn->setConnectionCallback(connectionCallback_);
+			conn->setCloseCallback(std::bind(&TcpServer::removeConnection, this, std::placeholders::_1));
+
+			//ioLoop->runInLoop(std::bind(&TcpConnection::connectEstablished, conn));
+			ioLoop->runInLoop([conn]() { conn->connectEstablished(); });
 		}
 
 		void TcpServer::removeConnection(const TcpConnectionPtr& conn)
 		{
+			loop_->runInLoop([this, conn]() { removeConnectionInLoop(conn); });
 		}
 
 		void TcpServer::removeConnectionInLoop(const TcpConnectionPtr& conn)
 		{
+			LOG_INFO("TcpServer::removeConnectionInLoop [%s] - connection %s\n",
+					 name_.c_str(), conn->name().c_str());
+			connectionMap_.erase(conn->name());
+			conn->getLoop()->queueInLoop([conn]() {
+				conn->connectDestroyed();
+			});
 		}
 
 
