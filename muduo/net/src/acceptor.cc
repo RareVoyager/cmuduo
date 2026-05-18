@@ -27,7 +27,11 @@ namespace cmuduo
 			// bind
 			acceptSocket_.bindAddress(&listenAddress);
 			// readCallback 有事情发生了 代表着有新用户连接了
-			acceptChannel_.setReadCallback(std::bind(&Acceptor::handleRead, this));
+			
+			//acceptChannel_.setReadCallback(std::bind(&Acceptor::handleRead, this));
+			acceptChannel_.setReadCallback([this](base::TimeStamp receiveTime) {
+				handleRead();
+			});
 		}
 
 		Acceptor::~Acceptor()
@@ -40,6 +44,8 @@ namespace cmuduo
 		{
 			listenning_ = true;
 			acceptSocket_.listen();
+			// 设置channel 对读事件感兴趣
+			acceptChannel_.enableReading();
 		}
 
 

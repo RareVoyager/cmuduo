@@ -19,7 +19,7 @@ namespace cmuduo
 {
 	namespace net
 	{
-		EventLoop* CheckNotNull(EventLoop* loop)
+		EventLoop* CheckEventLoopNotNull(EventLoop* loop)
 		{
 			if (!loop)
 			{
@@ -29,7 +29,7 @@ namespace cmuduo
 		}
 
 		TcpConnection::TcpConnection(EventLoop* loop, const std::string& nameArg, int sockfd, const base::InetAddress& localAddr, const base::InetAddress& peerAddr)
-			: loop_(CheckNotNull(loop)),
+			: loop_(CheckEventLoopNotNull(loop)),
 			  name_(nameArg),
 			  state_(kConnecting),
 			  socket_(new Socket(sockfd)),

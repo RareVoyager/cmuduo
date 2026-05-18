@@ -32,7 +32,7 @@ namespace cmuduo
 				loops_.emplace_back(t->startLoop());
 			}
 
-			if (numThreads_ == 0)
+			if (numThreads_ == 0 && cb)
 			{
 				cb(baseLoop_);
 			}

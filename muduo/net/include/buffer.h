@@ -52,7 +52,7 @@ namespace cmuduo
 				writeIndex_ = kCheapPrepend;
 			}
 
-			std::string retrieveAllAsString(size_t len)
+			std::string retrieveAllAsString()
 			{
 				return retrieveAsString(readableBytes());
 			}

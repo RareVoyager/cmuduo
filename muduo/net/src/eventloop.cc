@@ -34,7 +34,7 @@ namespace cmuduo
 			  poller_(Poller::newDefaultPoller(this)),
 			  wakeupChannel_(new Channel(this, wakeupFd_))
 		{
-			LOG_DEBUG("EventLoop created %p in thread %d\n", this, threadId_);
+			// LOG_DEBUG("EventLoop created %p in thread %d\n", this, threadId_);
 			if (t_loopInThisThread)
 			{
 				LOG_FATAL("EventLoop exists %p\n", this);
@@ -44,6 +44,7 @@ namespace cmuduo
 				t_loopInThisThread = this;
 			}
 
+			LOG_INFO("EventLoop Init finished");
 			wakeupChannel_->setReadCallback(std::bind(&EventLoop::handleRead, this));
 			wakeupChannel_->enableReading();
 		}
@@ -74,8 +75,8 @@ namespace cmuduo
 				}
 
 				// 执行当前EventLoop 事件循环需要处理的回调操作
-				LOG_INFO("EventLoop %p stop loop ", this);
 				doPendingFunctors();
+				LOG_INFO("EventLoop %p stop loop ", this);
 			}
 		}
 
@@ -104,7 +105,7 @@ namespace cmuduo
 		void EventLoop::queueInLoop(Functor cb)
 		{
 			{
-				std::unique_lock<std::mutex> mutex_;
+				std::unique_lock<std::mutex> lock(mutex_);
 				pendingFunctor_.emplace_back(cb);
 			}
 			if (!isInLoopThread() || callingPendingFunctors_)
@@ -159,7 +160,7 @@ namespace cmuduo
 
 			for (auto it: functors)
 			{
-                // 当前loop 需要执行的回调操作。
+				// 当前loop 需要执行的回调操作。
 				it();
 			}
 			callingPendingFunctors_ = false;

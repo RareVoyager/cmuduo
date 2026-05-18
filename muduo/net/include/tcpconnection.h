@@ -44,12 +44,18 @@ namespace cmuduo
 				highWaterMark_ = highWaterMark;
 			}
 
+			bool connected() const { return state_ == kConnected; }
+
+			base::InetAddress peerAddress() const { return  peerAddr_;	}
+
 			// clang-format on
 			// 建立连接
 			void connectEstablished();
 
 			void connectDestroyed();
 			void shutdown();
+
+			void send(const std::string& buf);
 
 		private:
 			enum StateE
@@ -69,7 +75,7 @@ namespace cmuduo
 
 			void shutdownInLoop();
 
-			void send(const std::string& buf);
+			
 
 			void sendInLoop(const void* data, size_t len);
 

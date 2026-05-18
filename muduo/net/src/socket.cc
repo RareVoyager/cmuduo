@@ -40,7 +40,7 @@ namespace cmuduo
 			bzero(&addr, sizeof(addr));
 			socklen_t len = sizeof(addr);
 
-			int connfd = ::accept(sockfd_, (sockaddr*)&addr, &len);
+			int connfd = ::accept4(sockfd_, (sockaddr*)&addr, &len, SOCK_NONBLOCK | SOCK_CLOEXEC);
 
 			if (connfd > 0)
 			{

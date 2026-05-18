@@ -37,7 +37,7 @@ namespace cmuduo
 			int csize = channels_.size();
 			LOG_INFO("func=>%s, fd total count = %d", __FUNCTION__, csize);
 
-			int numEvents = ::epoll_wait(epollfd_, &*events_.begin(), static_cast<int>(events_.size()), 10);
+			int numEvents = ::epoll_wait(epollfd_, &*events_.begin(), static_cast<int>(events_.size()), timeoutMs);
 			int saveErrno = errno;
 			cmuduo::base::TimeStamp now(cmuduo::base::TimeStamp::now());
 			if (numEvents > 0)
