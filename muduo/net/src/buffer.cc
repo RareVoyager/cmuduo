@@ -1,5 +1,6 @@
 #include <errno.h>
 #include <sys/uio.h>
+#include <unistd.h>
 
 #include <include/buffer.h>
 
@@ -24,10 +25,10 @@ namespace cmuduo
 			vec[1].iov_len = sizeof(extrabuf);
 
 			const int iovcnt = writable < sizeof(extrabuf) ? 2 : 1;
-            
-            // readv 先向vec[0] 写数据，再向vec[1] 写数据
+
+			// readv 先向vec[0] 写数据，再向vec[1] 写数据
 			// 向非连续的缓冲区写数据
-            ssize_t n = ::readv(fd, vec, iovcnt);
+			ssize_t n = ::readv(fd, vec, iovcnt);
 
 			if (n < 0)
 			{
@@ -35,7 +36,7 @@ namespace cmuduo
 			}
 			else if (n <= writable)
 			{
-                // buffer_ 够写
+				// buffer_ 够写
 				writeIndex_ += n;
 			}
 			else
@@ -46,7 +47,19 @@ namespace cmuduo
 			return n;
 		}
 
+		ssize_t Buffer::writeFd(int fd, int* saveErrno)
+		{
+			ssize_t n = ::write(fd, peek(), writableBytes());
+
+			if (n < 0)
+			{
+				*saveErrno = errno;
+			}
+			return n;
+		}
+
 	}// namespace net
+	// namespace net
 
 
 }// namespace cmuduo

@@ -79,8 +79,10 @@ namespace cmuduo
 				writeIndex_ += len;
 			}
 
-            // 从fd 上读取数据
+			// 从fd 上读取数据
 			ssize_t readFd(int fd, int* saveErrno);
+
+			ssize_t writeFd(int fd, int* saveErrno);
 
 		private:
 			// clang-format off
